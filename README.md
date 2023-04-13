@@ -37,7 +37,7 @@ This repository uses the back-translation augmentation technique, which involves
 2. Change to the project directory:
 
     ```bash
-    cd text-augmentation-back-translation
+    cd back-translation-text-augmentation
     ```
 3. Install the required dependencies:
 
