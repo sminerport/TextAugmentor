@@ -6,26 +6,33 @@ This repository contains a Python script that leverages the NLPAug library and r
 
 These instructions will help you set up the project on your local machine for development and testing purposes.
 
-### Prerequisites
+## Usage
 
-Before you begin, make sure you have Python 3.6 or higher installed on your local machine.
+1. Clone this repository:
+    ```
+    git clone https://github.com/sminerport/back-translation-text-augmentation.git
+    ```
+2. Change to the project directory:
+    ```
+    cd text-augmentation-back-translation
+    ```
+3. Install the required dependencies:
+    ```
+    pip install -r requirements.txt
+    ```
+4. Run the Python script:
+    ```
+    python src/augment_file.py
+    ```
 
-First, clone the repository to your local machine:
+The script will process each TXT file in the `data/` directory, performing round-trip translation, and save the augmented versions with an "AUG_" prefix in the same folder.
 
-```bash
-git clone https://github.com/sminerport/back-translation-text-augmentation.git
-```
+## License
 
-Navigate to the back-translation-text-augmentation folder:
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-```bash
-cd back-translation-text-augmentation
-```
+## Acknowledgments
 
-Next, you'll need to install the required Python packages listed in the requirements.txt file. You can do this by running the following command in your terminal or command prompt:
+- NLPAug library: https://github.com/makcedward/nlpaug
+- Round-trip translation technique inspiration
 
-```
-pip install -r requirements.txt
-```
-
-This command will install all the necessary packages and their specific versions as listed in the requirements.txt file, ensuring compatibility with the script.
