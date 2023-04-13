@@ -19,8 +19,8 @@ This repository contains a Python script that leverages the NLPAug library and r
     ```bash
     pip install -r requirements.txt
     ```
-
 4. Run the Python script:
+
     ```bash
     python src/augment_file.py
     ```
