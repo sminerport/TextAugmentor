@@ -5,18 +5,20 @@ This repository contains a Python script that leverages the NLPAug library and r
 ## Usage
 
 1. Clone this repository:
-    ```
+
+    ```bash
     git clone https://github.com/sminerport/back-translation-text-augmentation.git
     ```
 2. Change to the project directory:
-    ```
+
+    ```bash
     cd text-augmentation-back-translation
     ```
-3. Install the required dependencies:
+5. Install the required dependencies:
     ```
     pip install -r requirements.txt
     ```
-4. Run the Python script:
+6. Run the Python script:
     ```
     python src/augment_file.py
     ```
