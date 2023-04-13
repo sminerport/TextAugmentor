@@ -14,12 +14,14 @@ This repository contains a Python script that leverages the NLPAug library and r
     ```bash
     cd text-augmentation-back-translation
     ```
-5. Install the required dependencies:
-    ```
+3. Install the required dependencies:
+
+    ```bash
     pip install -r requirements.txt
     ```
-6. Run the Python script:
-    ```
+
+4. Run the Python script:
+    ```bash
     python src/augment_file.py
     ```
 
