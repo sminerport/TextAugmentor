@@ -36,31 +36,25 @@ def get_txt_files(folder_path):
 def clean_augmented_text(augmented_lines):
     cleaned_lines = []
     for line in augmented_lines:
-        # Remove duplicate repetitions of phrases (e.g., "out of the crisis, out of the crisis")
-        line = remove_repeated_phrases(line)
-        
+        # Remove repeated punctuation like multiple exclamation marks
+        line = remove_repeated_punctuation(line)
+
         # Capitalize the first letter of each sentence
         sentences = sent_tokenize(line)
         cleaned_sentences = [capitalize_sentence(sentence) for sentence in sentences]
-        
+
         # Join back the cleaned sentences into a single line
-        cleaned_lines.append(' '.join(cleaned_sentences) + '\n')  # Add newline to preserve line breaks
-    
+        cleaned_lines.append(' '.join(cleaned_sentences) + '\n')  # Preserve the newline
+
     return cleaned_lines
 
-def remove_repeated_phrases(line):
-    words = line.split()
-    new_words = []
-    for i in range(len(words)):
-        # If the current word is the same as the previous word, skip it
-        if i > 0 and words[i] == words[i - 1]:
-            continue
-        new_words.append(words[i])
-    return ' '.join(new_words)
+def remove_repeated_punctuation(line):
+    # Remove repetitive punctuation like multiple exclamation marks
+    return line.replace("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "!")
 
 def capitalize_sentence(sentence):
-    if sentence:
-        # Capitalize the first letter if it isn't already
+    # Capitalize the first letter if it isn't already
+    if sentence and sentence[0].islower():
         return sentence[0].upper() + sentence[1:]
     return sentence
 
@@ -114,7 +108,7 @@ def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
         print(f'Processing: {file_name}')
 
         augmented_lines = augment_text_by_sentence_with_line_breaks(file_path, aug)
-        
+
         # Clean augmented text for better formatting
         cleaned_lines = clean_augmented_text(augmented_lines)
 
