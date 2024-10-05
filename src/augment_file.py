@@ -7,13 +7,28 @@ import warnings
 import nltk
 from nltk.tokenize import sent_tokenize
 
-nltk.download('punkt')
+# Check if we're running in Google Colab
+try:
+    from google.colab import drive
+    IN_COLAB = True
+except ImportError:
+    IN_COLAB = False
+
+nltk.download('punkt_tab')
 
 # Suppress the torch FutureWarning
 warnings.filterwarnings("ignore", category=FutureWarning, module="transformers.modeling_utils")
 
-FOLDER = 'data'
-OUTPUT_FOLDER = 'output'
+# Set the folder paths based on environment
+if IN_COLAB:
+    print("Running in Google Colab, mounting Google Drive...")
+    drive.mount('/content/drive')
+    FOLDER = '/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data'
+    OUTPUT_FOLDER = '/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output'
+else:
+    print("Running in local environment...")
+    FOLDER = 'data'
+    OUTPUT_FOLDER = 'output'
 
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, '*.txt'))
@@ -23,14 +38,14 @@ def clean_augmented_text(augmented_lines):
     for line in augmented_lines:
         # Remove duplicate repetitions of phrases (e.g., "out of the crisis, out of the crisis")
         line = remove_repeated_phrases(line)
-
+        
         # Capitalize the first letter of each sentence
         sentences = sent_tokenize(line)
         cleaned_sentences = [capitalize_sentence(sentence) for sentence in sentences]
-
+        
         # Join back the cleaned sentences into a single line
-        cleaned_lines.append(' '.join(cleaned_sentences))
-
+        cleaned_lines.append(' '.join(cleaned_sentences) + '\n')  # Add newline to preserve line breaks
+    
     return cleaned_lines
 
 def remove_repeated_phrases(line):
@@ -64,12 +79,12 @@ def augment_text_by_sentence_with_line_breaks(file_path, augmenter):
             for sentence in sentences:
                 augmented_sentence = augmenter.augment([sentence])[0]
                 augmented_sentences.append(augmented_sentence)
-            # Reconstruct the line from augmented sentences
-            augmented_line = ' '.join(augmented_sentences)
+            # Reconstruct the line from augmented sentences, preserving original line breaks
+            augmented_line = ' '.join(augmented_sentences) + '\n'
         else:
-            augmented_line = ''  # Handle empty lines
+            augmented_line = '\n'  # Preserve empty lines
 
-        augmented_lines.append(augmented_line + '\n')  # Maintain original newline
+        augmented_lines.append(augmented_line)  # Maintain original newline after each line
 
     return augmented_lines
 
@@ -99,7 +114,7 @@ def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
         print(f'Processing: {file_name}')
 
         augmented_lines = augment_text_by_sentence_with_line_breaks(file_path, aug)
-
+        
         # Clean augmented text for better formatting
         cleaned_lines = clean_augmented_text(augmented_lines)
 
