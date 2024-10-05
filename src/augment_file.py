@@ -36,25 +36,26 @@ def get_txt_files(folder_path):
 def clean_augmented_text(augmented_lines):
     cleaned_lines = []
     for line in augmented_lines:
-        # Remove repeated punctuation like multiple exclamation marks
+        # Remove repeated punctuation like multiple exclamation marks or periods
         line = remove_repeated_punctuation(line)
 
-        # Capitalize the first letter of each sentence
+        # Tokenize the line into sentences and capitalize the first letter of each sentence
         sentences = sent_tokenize(line)
         cleaned_sentences = [capitalize_sentence(sentence) for sentence in sentences]
 
-        # Join back the cleaned sentences into a single line
-        cleaned_lines.append(' '.join(cleaned_sentences) + '\n')  # Preserve the newline
+        # Join the cleaned sentences into a single string with the original structure
+        cleaned_lines.append(' '.join(cleaned_sentences) + '\n')  # Preserve the original line breaks
 
     return cleaned_lines
 
 def remove_repeated_punctuation(line):
-    # Remove repetitive punctuation like multiple exclamation marks
-    return line.replace("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "!")
+    # Replace any repeated punctuation (e.g., "!!!" or "...") with a single punctuation mark
+    return re.sub(r'([!?.,])\1+', r'\1', line)
 
 def capitalize_sentence(sentence):
-    # Capitalize the first letter if it isn't already
-    if sentence and sentence[0].islower():
+    # Ensure the first letter of each sentence is capitalized, regardless of how it was before
+    sentence = sentence.strip()  # Remove leading/trailing whitespace
+    if sentence:
         return sentence[0].upper() + sentence[1:]
     return sentence
 
