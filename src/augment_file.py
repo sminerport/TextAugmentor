@@ -44,8 +44,8 @@ def clean_augmented_text(augmented_lines):
         sentences = sent_tokenize(line)
         cleaned_sentences = [capitalize_sentence(sentence) for sentence in sentences]
 
-        # Join sentences preserving double spaces after periods and maintaining line breaks
-        cleaned_lines.append('  '.join(cleaned_sentences) + '\n')  # Double space after sentences, newline at end
+        # Join sentences preserving original newline structure
+        cleaned_lines.append(' '.join(cleaned_sentences) + '\n')
 
     return cleaned_lines
 
@@ -54,27 +54,35 @@ def remove_repeated_punctuation(line):
     return re.sub(r'([!?.,])\1+', r'\1', line)
 
 def capitalize_sentence(sentence):
-    # Capitalize the first letter if needed, and ensure proper spacing within sentences
+    # Capitalize the first letter of each sentence, but leave the rest as is
     sentence = sentence.strip()  # Remove leading/trailing whitespace
-    if sentence and sentence[0].islower():
+    if sentence:
         return sentence[0].upper() + sentence[1:]
     return sentence
 
-def augment_text_by_sentence_with_structure_preserved(file_path, augmenter):
+def augment_text_preserving_structure(file_path, augmenter):
     with open(file_path, 'r') as f_input:
-        original_text = f_input.read()
+        lines = f_input.readlines()
 
-    # Tokenize the text by sentences
-    sentences = sent_tokenize(original_text)
+    augmented_lines = []
+    for line in tqdm(lines, desc="Processing Lines"):
+        if line.strip():  # Only process non-empty lines
+            # Tokenize line into sentences
+            sentences = sent_tokenize(line.strip())
 
-    augmented_sentences = []
-    for sentence in tqdm(sentences, desc="Processing Sentences"):
-        # Augment each sentence
-        augmented_sentence = augmenter.augment(sentence)
-        augmented_sentences.append(augmented_sentence)
+            augmented_sentences = []
+            for sentence in sentences:
+                augmented_sentence = augmenter.augment(sentence)
+                augmented_sentences.append(augmented_sentence)
 
-    # Return augmented text with sentence structure intact
-    return '  '.join(augmented_sentences)  # Join with double space after sentences
+            # Join sentences back into a line, preserving original structure
+            augmented_line = ' '.join(augmented_sentences) + '\n'
+        else:
+            augmented_line = '\n'  # Preserve empty lines (paragraph breaks)
+
+        augmented_lines.append(augmented_line)
+
+    return augmented_lines
 
 def write_augmented_file(augmented_lines, output_file_path):
     # Write lines exactly as they were structured, preserving original line breaks and spaces
@@ -101,14 +109,14 @@ def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
         file_name = os.path.basename(file_path)
         print(f'Processing: {file_name}')
 
-        # Process each file sentence by sentence, preserving the original structure
-        augmented_text = augment_text_by_sentence_with_structure_preserved(file_path, aug)
+        # Process each file, preserving sentence and line structure
+        augmented_lines = augment_text_preserving_structure(file_path, aug)
 
-        # Clean augmented text for better formatting
-        cleaned_text = clean_augmented_text(augmented_text.splitlines())
+        # Clean the augmented text
+        cleaned_lines = clean_augmented_text(augmented_lines)
 
         output_file_path = os.path.join(output_folder, 'AUG_' + file_name)
-        write_augmented_file(cleaned_text, output_file_path)
+        write_augmented_file(cleaned_lines, output_file_path)
 
         print(f'{file_name} augmentation complete... Output saved to {output_file_path}')
 
