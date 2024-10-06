@@ -1,32 +1,14 @@
 import sys
 import os
-import glob
-import nlpaug.augmenter.word as naw
-from tqdm import tqdm
-import torch
-import warnings
-import nltk
-import re
 import subprocess
+import warnings
+import re
+from tqdm import tqdm
+import nltk
+import nlpaug.augmenter.word as naw
+import torch
 
-def install_python_39_in_colab():
-    print("Installing Python 3.9 and necessary packages...")
-
-    # Install Python 3.9 and necessary packages using subprocess
-    subprocess.run(['apt-get', 'update', '-y'], check=True)
-    subprocess.run(['apt-get', 'install', 'python3.9', '-y'], check=True)
-    subprocess.run(['apt-get', 'install', 'python3.9-distutils', '-y'], check=True)
-    subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
-    subprocess.run(['python3.9', 'get-pip.py'], check=True)
-
-    # Install required Python packages for Python 3.9
-    subprocess.run(['python3.9', '-m', 'pip', 'install', '--upgrade', 'pip'], check=True)
-    subprocess.run(['python3.9', '-m', 'pip', '-r', 'requirements.txt'], check=True)
-
-    print("Installation complete. Please restart the runtime and run the script again.")
-    sys.exit()
-
-# Check if we're running in Google Colab
+# Function to check if running in Colab
 def is_running_in_colab():
     try:
         import google.colab
@@ -34,20 +16,28 @@ def is_running_in_colab():
     except ImportError:
         return False
 
-# Check Python version and install Python 3.9 if necessary
-if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
-    install_python_39_in_colab()
+# Function to check Python version and install Python 3.9 if necessary
+def check_python_version():
+    if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
+        print("You are not running Python 3.9. Please install Python 3.9 and restart the runtime.")
+        print("To install Python 3.9, run the following commands:")
+        print("""
+        !apt-get update -y
+        !apt-get install python3.9 -y
+        !apt-get install python3.9-distutils -y
+        !wget https://bootstrap.pypa.io/get-pip.py
+        !python3.9 get-pip.py
+        !python3.9 -m pip install --upgrade pip
+        """)
+        sys.exit(1)
 
-# Continue with the rest of your code
+# Verify Python version
+check_python_version()
+
+# Continue with the rest of the code after Python 3.9 is verified
 print(f"Current Python version: {sys.version}")
 
-import nlpaug.augmenter.word as naw
-from tqdm import tqdm
-import torch
-import warnings
-import nltk
-import re
-
+# Your code continues here...
 nltk.download("punkt")
 
 # Suppress the torch FutureWarning
@@ -65,6 +55,7 @@ else:
     FOLDER = "data"
     OUTPUT_FOLDER = "output"
 
+# Additional functions for augmentation processing...
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
 
