@@ -55,8 +55,8 @@ def main():
         print("Running in Google Colab, mounting Google Drive...")
         from google.colab import drive
         drive.mount("/content/drive")
-        folder_path = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
-        output_folder = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output"
+        folder_path = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/data"
+        output_folder = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/output"
     else:
         print("Running in local environment...")
         folder_path = "data"
