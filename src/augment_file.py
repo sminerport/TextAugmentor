@@ -17,20 +17,23 @@ def is_running_in_colab():
 
 def install_python_39_in_colab():
     """
-    Install Python 3.9 and necessary packages in Colab.
+    Install Python 3.9 and run setup.sh in Colab.
     """
     print("Installing Python 3.9 and necessary packages...")
 
-    # Install Python 3.9 and necessary packages using subprocess
+    # Install Python 3.9 using subprocess
     subprocess.run(['apt-get', 'update', '-y'], check=True)
     subprocess.run(['apt-get', 'install', 'python3.9', '-y'], check=True)
     subprocess.run(['apt-get', 'install', 'python3.9-distutils', '-y'], check=True)
     subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
     subprocess.run(['python3.9', 'get-pip.py'], check=True)
 
-    # Install required Python packages for Python 3.9
-    subprocess.run(['python3.9', '-m', 'pip', 'install', '--upgrade', 'pip'], check=True)
-    subprocess.run(['python3.9', '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
+    # Switch to using Python 3.9 explicitly
+    subprocess.run(['update-alternatives', '--install', '/usr/bin/python3', 'python3', '/usr/bin/python3.9', '2'], check=True)
+    subprocess.run(['update-alternatives', '--set', 'python3', '/usr/bin/python3.9'], check=True)
+
+    # Run the setup.sh script instead of pip install requirements.txt directly
+    subprocess.run(['bash', 'setup.sh'], check=True)
 
     print("Installation complete. Please restart the runtime and run the script again.")
     sys.exit()
