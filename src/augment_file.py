@@ -3,7 +3,6 @@ import os
 import glob
 import warnings
 import re
-import subprocess
 import nltk
 import nlpaug.augmenter.word as naw
 from tqdm import tqdm
@@ -20,41 +19,7 @@ def is_running_in_colab():
     except ImportError:
         return False
 
-def install_python_39_in_colab():
-    """
-    Install Python 3.9 and run setup.sh in Colab.
-    """
-    print("Installing Python 3.9 and necessary packages...")
-
-    # Install Python 3.9 using subprocess
-    subprocess.run(['apt-get', 'update', '-y'], check=True)
-    subprocess.run(['apt-get', 'install', 'python3.9', '-y'], check=True)
-    subprocess.run(['apt-get', 'install', 'python3.9-distutils', '-y'], check=True)
-
-    # Check if get-pip.py already exists
-    if not os.path.exists('get-pip.py'):
-        print("Downloading get-pip.py...")
-        subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
-    else:
-        print("get-pip.py already exists. Skipping download.")
-
-    subprocess.run(['python3.9', 'get-pip.py'], check=True)
-
-    # Switch to using Python 3.9 explicitly
-    subprocess.run(['update-alternatives', '--install', '/usr/bin/python3', 'python3', '/usr/bin/python3.9', '2'], check=True)
-    subprocess.run(['update-alternatives', '--set', 'python3', '/usr/bin/python3.9'], check=True)
-
-    # Run the setup.sh script instead of pip install requirements.txt directly
-    subprocess.run(['bash', 'setup.sh'], check=True)
-
-    print("Installation complete. Please restart the runtime and run the script again.")
-    sys.exit()
-
 def main():
-    # Check if running in Colab and install Python 3.9 if necessary
-    if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
-        install_python_39_in_colab()
-
     print(f"Current Python version: {sys.version}")
 
     nltk.download("punkt")
@@ -85,7 +50,8 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and the newlines
+    paragraphs = re.split(r'(
+{2,})', text)  # Capture paragraphs and the newlines
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
