@@ -4,6 +4,11 @@ import glob
 import warnings
 import re
 import subprocess
+import nltk
+import nlpaug.augmenter.word as naw
+from tqdm import tqdm
+import torch
+
 
 def is_running_in_colab():
     """
@@ -25,7 +30,14 @@ def install_python_39_in_colab():
     subprocess.run(['apt-get', 'update', '-y'], check=True)
     subprocess.run(['apt-get', 'install', 'python3.9', '-y'], check=True)
     subprocess.run(['apt-get', 'install', 'python3.9-distutils', '-y'], check=True)
-    subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
+
+    # Check if get-pip.py already exists
+    if not os.path.exists('get-pip.py'):
+        print("Downloading get-pip.py...")
+        subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
+    else:
+        print("get-pip.py already exists. Skipping download.")
+        
     subprocess.run(['python3.9', 'get-pip.py'], check=True)
 
     # Switch to using Python 3.9 explicitly
@@ -45,13 +57,8 @@ def main():
 
     print(f"Current Python version: {sys.version}")
 
-    # Importing packages only after Python 3.9 is installed
-    import nltk
-    import nlpaug.augmenter.word as naw
-    from tqdm import tqdm
-    import torch
 
-    nltk.download("punkt")
+    nltk.download("punkt_tab")
 
     # Set the folder paths based on environment
     if is_running_in_colab():
