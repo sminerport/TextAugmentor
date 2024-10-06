@@ -11,13 +11,9 @@ import torch
 
 def is_running_in_colab():
     """
-    Check if the script is running in Google Colab.
+    Check if the script is running in Google Colab by checking environment variables and default Colab paths.
     """
-    try:
-        import google.colab
-        return True
-    except ImportError:
-        return False
+    return 'COLAB_GPU' in os.environ or 'COLAB_TPU_ADDR' in os.environ or os.path.exists('/content')
 
 def main():
     print(f"Current Python version: {sys.version}")
@@ -28,7 +24,11 @@ def main():
     if is_running_in_colab():
         print("Running in Google Colab, mounting Google Drive...")
         from google.colab import drive
-        drive.mount("/content/drive")
+        drive_path = "/content/drive"
+        if not os.path.ismount(drive_path):
+            drive.mount(drive_path)
+        else:
+            print("Google Drive is already mounted.")
         folder_path = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/data"
         output_folder = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/output"
     else:
