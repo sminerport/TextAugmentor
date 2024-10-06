@@ -1,3 +1,4 @@
+import sys
 import os
 import glob
 import nlpaug.augmenter.word as naw
@@ -6,44 +7,69 @@ import torch
 import warnings
 import nltk
 import re
+import subprocess
+
+def install_python_39_in_colab():
+    print("Installing Python 3.9 and necessary packages...")
+
+    # Install Python 3.9 and necessary packages using subprocess
+    subprocess.run(['apt-get', 'update', '-y'], check=True)
+    subprocess.run(['apt-get', 'install', 'python3.9', '-y'], check=True)
+    subprocess.run(['apt-get', 'install', 'python3.9-distutils', '-y'], check=True)
+    subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
+    subprocess.run(['python3.9', 'get-pip.py'], check=True)
+
+    # Install required Python packages for Python 3.9
+    subprocess.run(['python3.9', '-m', 'pip', 'install', '--upgrade', 'pip'], check=True)
+    subprocess.run(['python3.9', '-m', 'pip', '-r', 'requirements.txt'], check=True)
+
+    print("Installation complete. Please restart the runtime and run the script again.")
+    sys.exit()
 
 # Check if we're running in Google Colab
-try:
-    from google.colab import drive
+def is_running_in_colab():
+    try:
+        import google.colab
+        return True
+    except ImportError:
+        return False
 
-    IN_COLAB = True
-except ImportError:
-    IN_COLAB = False
+# Check Python version and install Python 3.9 if necessary
+if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
+    install_python_39_in_colab()
+
+# Continue with the rest of your code
+print(f"Current Python version: {sys.version}")
+
+import nlpaug.augmenter.word as naw
+from tqdm import tqdm
+import torch
+import warnings
+import nltk
+import re
 
 nltk.download("punkt")
 
 # Suppress the torch FutureWarning
-warnings.filterwarnings(
-    "ignore", category=FutureWarning, module="transformers.modeling_utils"
-)
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Set the folder paths based on environment
-if IN_COLAB:
+if is_running_in_colab():
     print("Running in Google Colab, mounting Google Drive...")
+    from google.colab import drive
     drive.mount("/content/drive")
-    FOLDER = (
-        "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
-    )
+    FOLDER = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
     OUTPUT_FOLDER = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output"
 else:
     print("Running in local environment...")
     FOLDER = "data"
     OUTPUT_FOLDER = "output"
 
-
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
 
-
 def remove_repeated_punctuation(text):
-    # Remove repetitive punctuation (e.g., "!!!" or "...") with a single punctuation mark
     return re.sub(r"([!?.,])\1+", r"\1", text)
-
 
 def augment_text_preserving_structure(file_path, augmenter):
     with open(file_path, "r") as f_input:
@@ -62,16 +88,13 @@ def augment_text_preserving_structure(file_path, augmenter):
 
     return augmented_text
 
-
 def split_text_with_spaces(text):
     pattern = re.compile(r'(.*?[\.\!\?]["\']?)(\s+|$)', re.DOTALL)
     return pattern.findall(text)
 
-
 def write_augmented_file(augmented_text, output_file_path):
     with open(output_file_path, "w") as f_output:
         f_output.write(augmented_text)
-
 
 def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
     folder_path = os.path.abspath(folder_path)
@@ -105,14 +128,10 @@ def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
         output_file_path = os.path.join(output_folder, "AUG_" + file_name)
         write_augmented_file(cleaned_text, output_file_path)
 
-        print(
-            f"{file_name} augmentation complete... Output saved to {output_file_path}"
-        )
-
+        print(f"{file_name} augmentation complete... Output saved to {output_file_path}")
 
 def main():
     augment_files_in_folder()
-
 
 if __name__ == "__main__":
     main()
