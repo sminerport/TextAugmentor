@@ -106,9 +106,9 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
 
         # Format text within each paragraph to max_line_length
         formatted_paragraph = format_text(paragraph_text, max_line_length)
-        augmented_text += formatted_paragraph
+        augmented_text += formatted_paragraph.strip() + "\n"  # Add exactly one newline to preserve paragraph spacing
 
-    return augmented_text
+    return augmented_text.strip() + "\n"  # Ensure no extra newlines at the end
 
 def split_text_with_spaces(text):
     """
@@ -176,7 +176,7 @@ def augment_files_in_folder(folder_path, output_folder, max_line_length=80):
         with open(file_path, "r") as original_file:
             original_lines = original_file.readlines()
             if original_lines:
-                cleaned_text = original_lines[0] + "\n" + cleaned_text
+                cleaned_text = original_lines[0].strip() + "\n\n" + cleaned_text
 
         output_file_path = os.path.join(output_folder, "AUG_" + file_name)
         write_augmented_file(cleaned_text, output_file_path)
