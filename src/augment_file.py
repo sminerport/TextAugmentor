@@ -23,8 +23,8 @@ def main():
     # Set the folder paths based on environment
     if is_running_in_colab():
         print("Running in Google Colab. Please manually connect Google Drive.")
-        folder_path = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/data"
-        output_folder = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/output"
+        folder_path = "/content/drive/MyDrive/Code/TextAugmentor/data"
+        output_folder = "/content/drive/MyDrive/Code/TextAugmentor/output"
     else:
         print("Running in local environment...")
         folder_path = "data"
