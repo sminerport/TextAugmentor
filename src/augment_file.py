@@ -72,7 +72,7 @@ def augment_text_preserving_structure(file_path, augmenter):
 
             augmented_sentences = []
             for sentence in sentences:
-                augmented_sentence = augmenter.augment(sentence)
+                augmented_sentence = augmenter.augment(sentence)[0]
                 augmented_sentences.append(augmented_sentence)
 
             # Join sentences back into a line, preserving original structure
