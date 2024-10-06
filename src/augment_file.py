@@ -23,15 +23,15 @@ def main():
     # Set the folder paths based on environment
     if is_running_in_colab():
         print("Running in Google Colab. Please manually connect Google Drive.")
-        folder_path = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/data"
-        output_folder = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/output"
+        folder_path = "/content/drive/MyDrive/Code/TextAugmentor/data"
+        output_folder = "/content/drive/MyDrive/Code/TextAugmentor/output"
     else:
         print("Running in local environment...")
         folder_path = "data"
         output_folder = "output"
 
     # Continue with the rest of the script after the installation
-    augment_files_in_folder(folder_path, output_folder, max_line_length=80)
+    augment_files_in_folder(folder_path, output_folder)
 
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
@@ -39,12 +39,21 @@ def get_txt_files(folder_path):
 def remove_repeated_punctuation(text):
     return re.sub(r"([!?.,])\1+", r"\1", text)
 
-def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
+def get_max_line_length(file_path):
+    max_length = 0
+    with open(file_path, "r") as f_input:
+        for line in f_input:
+            max_length = max(max_length, len(line.strip()))
+    return max_length
+
+def augment_text_preserving_structure(file_path, augmenter):
+    max_line_length = get_max_line_length(file_path)
     with open(file_path, "r") as f_input:
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and the newlines
+    paragraphs = re.split(r'(
+{2,})', text)  # Capture paragraphs and the newlines
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
@@ -102,7 +111,7 @@ def write_augmented_file(augmented_text, output_file_path):
     with open(output_file_path, "w") as f_output:
         f_output.write(augmented_text)
 
-def augment_files_in_folder(folder_path, output_folder, max_line_length=80):
+def augment_files_in_folder(folder_path, output_folder):
     folder_path = os.path.abspath(folder_path)
     output_folder = os.path.abspath(output_folder)
     os.makedirs(output_folder, exist_ok=True)
@@ -126,7 +135,7 @@ def augment_files_in_folder(folder_path, output_folder, max_line_length=80):
         print(f"Processing: {file_name}")
 
         # Process each file, preserving sentence and line structure
-        augmented_text = augment_text_preserving_structure(file_path, aug, max_line_length)
+        augmented_text = augment_text_preserving_structure(file_path, aug)
 
         # Clean the augmented text
         cleaned_text = remove_repeated_punctuation(augmented_text)
