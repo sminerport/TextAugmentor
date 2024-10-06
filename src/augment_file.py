@@ -83,12 +83,12 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
     with open(file_path, "r") as f_input:
         text = f_input.read()
 
-    # Split the text into paragraphs first
+    # Split the text into paragraphs first (preserve empty lines as paragraph breaks)
     paragraphs = text.split("\n\n")
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
-        # Process each paragraph by splitting into sentences
+        # Process each paragraph by splitting into sentences and keeping the original spaces
         sentences_with_spaces = split_text_with_spaces(paragraph)
 
         paragraph_text = ""
@@ -101,15 +101,18 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
 
         # Format text within each paragraph to max_line_length
         formatted_paragraph = format_text(paragraph_text, max_line_length)
-        augmented_text += formatted_paragraph + "\n\n"  # Ensure paragraph breaks are preserved
+        augmented_text += formatted_paragraph + "\n"  # Preserve original paragraph breaks
 
     return augmented_text
 
 def split_text_with_spaces(text):
+    """
+    Splits text into sentences, preserving original spacing (single or double).
+    """
     pattern = re.compile(r'(.*?[\.\!\?]["\']?)(\s+|$)', re.DOTALL)
     return pattern.findall(text)
 
-# Function to format text based on a maximum line length, preserving sentence double spaces
+# Function to format text based on a maximum line length, preserving sentence spacing
 def format_text(text, max_line_length):
     words = text.split()
     formatted_text = ""
@@ -118,14 +121,14 @@ def format_text(text, max_line_length):
     for word in words:
         # If adding the next word would exceed the max_line_length, add the line to formatted_text
         if len(line) + len(word) + 1 > max_line_length:
-            formatted_text += line.strip() + "\n"
+            formatted_text += line.rstrip() + "\n"  # Strip trailing spaces to prevent extra spaces
             line = ""
 
         line += word + " "
 
     # Add the last line
     if line:
-        formatted_text += line.strip() + "\n"
+        formatted_text += line.rstrip() + "\n"  # Strip trailing spaces to prevent extra spaces
 
     return formatted_text
 
