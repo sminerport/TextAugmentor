@@ -1,11 +1,7 @@
 import sys
 import os
 import glob
-import nlpaug.augmenter.word as naw
-from tqdm import tqdm
-import torch
 import warnings
-import nltk
 import re
 import subprocess
 
@@ -38,6 +34,36 @@ def install_python_39_in_colab():
 
     print("Installation complete. Please restart the runtime and run the script again.")
     sys.exit()
+
+def main():
+    # Check if running in Colab and install Python 3.9 if necessary
+    if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
+        install_python_39_in_colab()
+
+    print(f"Current Python version: {sys.version}")
+
+    # Importing packages only after Python 3.9 is installed
+    import nltk
+    import nlpaug.augmenter.word as naw
+    from tqdm import tqdm
+    import torch
+
+    nltk.download("punkt")
+
+    # Set the folder paths based on environment
+    if is_running_in_colab():
+        print("Running in Google Colab, mounting Google Drive...")
+        from google.colab import drive
+        drive.mount("/content/drive")
+        folder_path = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
+        output_folder = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output"
+    else:
+        print("Running in local environment...")
+        folder_path = "data"
+        output_folder = "output"
+
+    # Continue with the rest of the script after the installation
+    augment_files_in_folder(folder_path, output_folder)
 
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
@@ -103,29 +129,6 @@ def augment_files_in_folder(folder_path, output_folder):
         write_augmented_file(cleaned_text, output_file_path)
 
         print(f"{file_name} augmentation complete... Output saved to {output_file_path}")
-
-def main():
-    # Check Python version and install Python 3.9 if necessary
-    if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
-        install_python_39_in_colab()
-
-    print(f"Current Python version: {sys.version}")
-
-    nltk.download("punkt")
-
-    # Set the folder paths based on environment
-    if is_running_in_colab():
-        print("Running in Google Colab, mounting Google Drive...")
-        from google.colab import drive
-        drive.mount("/content/drive")
-        folder_path = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
-        output_folder = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output"
-    else:
-        print("Running in local environment...")
-        folder_path = "data"
-        output_folder = "output"
-
-    augment_files_in_folder(folder_path, output_folder)
 
 if __name__ == "__main__":
     main()
