@@ -172,6 +172,12 @@ def augment_files_in_folder(folder_path, output_folder, max_line_length=80):
         # Clean the augmented text
         cleaned_text = remove_repeated_punctuation(augmented_text)
 
+        # Ensure the header (like "CHAPTER 2") is preserved
+        with open(file_path, "r") as original_file:
+            original_lines = original_file.readlines()
+            if original_lines:
+                cleaned_text = original_lines[0] + "\n" + cleaned_text
+
         output_file_path = os.path.join(output_folder, "AUG_" + file_name)
         write_augmented_file(cleaned_text, output_file_path)
 
