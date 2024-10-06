@@ -1,61 +1,44 @@
 import sys
 import os
-import subprocess
-import warnings
-import re
-from tqdm import tqdm
-import nltk
+import glob
 import nlpaug.augmenter.word as naw
+from tqdm import tqdm
 import torch
+import warnings
+import nltk
+import re
+import subprocess
 
-# Function to check if running in Colab
 def is_running_in_colab():
+    """
+    Check if the script is running in Google Colab.
+    """
     try:
         import google.colab
         return True
     except ImportError:
         return False
 
-# Function to check Python version and install Python 3.9 if necessary
-def check_python_version():
-    if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
-        print("You are not running Python 3.9. Please install Python 3.9 and restart the runtime.")
-        print("To install Python 3.9, run the following commands:")
-        print("""
-        !apt-get update -y
-        !apt-get install python3.9 -y
-        !apt-get install python3.9-distutils -y
-        !wget https://bootstrap.pypa.io/get-pip.py
-        !python3.9 get-pip.py
-        !python3.9 -m pip install --upgrade pip
-        """)
-        sys.exit(1)
+def install_python_39_in_colab():
+    """
+    Install Python 3.9 and necessary packages in Colab.
+    """
+    print("Installing Python 3.9 and necessary packages...")
 
-# Verify Python version
-check_python_version()
+    # Install Python 3.9 and necessary packages using subprocess
+    subprocess.run(['apt-get', 'update', '-y'], check=True)
+    subprocess.run(['apt-get', 'install', 'python3.9', '-y'], check=True)
+    subprocess.run(['apt-get', 'install', 'python3.9-distutils', '-y'], check=True)
+    subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
+    subprocess.run(['python3.9', 'get-pip.py'], check=True)
 
-# Continue with the rest of the code after Python 3.9 is verified
-print(f"Current Python version: {sys.version}")
+    # Install required Python packages for Python 3.9
+    subprocess.run(['python3.9', '-m', 'pip', 'install', '--upgrade', 'pip'], check=True)
+    subprocess.run(['python3.9', '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
 
-# Your code continues here...
-nltk.download("punkt")
+    print("Installation complete. Please restart the runtime and run the script again.")
+    sys.exit()
 
-# Suppress the torch FutureWarning
-warnings.filterwarnings("ignore", category=FutureWarning)
-
-# Set the folder paths based on environment
-if is_running_in_colab():
-    print("Running in Google Colab, mounting Google Drive...")
-    from google.colab import drive
-    drive.mount("/content/drive")
-    FOLDER = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
-    OUTPUT_FOLDER = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output"
-else:
-    print("Running in local environment...")
-    FOLDER = "data"
-    OUTPUT_FOLDER = "output"
-
-# Additional functions for augmentation processing...
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
 
@@ -87,7 +70,7 @@ def write_augmented_file(augmented_text, output_file_path):
     with open(output_file_path, "w") as f_output:
         f_output.write(augmented_text)
 
-def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
+def augment_files_in_folder(folder_path, output_folder):
     folder_path = os.path.abspath(folder_path)
     output_folder = os.path.abspath(output_folder)
     os.makedirs(output_folder, exist_ok=True)
@@ -122,7 +105,27 @@ def augment_files_in_folder(folder_path=FOLDER, output_folder=OUTPUT_FOLDER):
         print(f"{file_name} augmentation complete... Output saved to {output_file_path}")
 
 def main():
-    augment_files_in_folder()
+    # Check Python version and install Python 3.9 if necessary
+    if is_running_in_colab() and (sys.version_info.major != 3 or sys.version_info.minor != 9):
+        install_python_39_in_colab()
+
+    print(f"Current Python version: {sys.version}")
+
+    nltk.download("punkt")
+
+    # Set the folder paths based on environment
+    if is_running_in_colab():
+        print("Running in Google Colab, mounting Google Drive...")
+        from google.colab import drive
+        drive.mount("/content/drive")
+        folder_path = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/data"
+        output_folder = "/content/drive/MyDrive/Colab Notebooks/back-translation-text-augmentation/output"
+    else:
+        print("Running in local environment...")
+        folder_path = "data"
+        output_folder = "output"
+
+    augment_files_in_folder(folder_path, output_folder)
 
 if __name__ == "__main__":
     main()
