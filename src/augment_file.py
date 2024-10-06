@@ -83,27 +83,33 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
     with open(file_path, "r") as f_input:
         text = f_input.read()
 
-    # Split text into sentences with their trailing spaces
-    sentences_with_spaces = split_text_with_spaces(text)
+    # Split the text into paragraphs first
+    paragraphs = text.split("\n\n")
 
     augmented_text = ""
-    for sentence, spaces in tqdm(sentences_with_spaces, desc="Processing Sentences"):
-        if sentence.strip():  # Only process non-empty sentences
-            augmented_sentence = augmenter.augment(sentence)[0]
-            augmented_text += augmented_sentence + spaces
-        else:
-            augmented_text += spaces  # Preserve spaces for empty sentences
+    for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
+        # Process each paragraph by splitting into sentences
+        sentences_with_spaces = split_text_with_spaces(paragraph)
 
-    # Format text to the desired line length
-    formatted_text = format_text(augmented_text, max_line_length)
+        paragraph_text = ""
+        for sentence, spaces in sentences_with_spaces:
+            if sentence.strip():  # Only process non-empty sentences
+                augmented_sentence = augmenter.augment(sentence)[0]
+                paragraph_text += augmented_sentence + spaces
+            else:
+                paragraph_text += spaces  # Preserve spaces for empty sentences
 
-    return formatted_text
+        # Format text within each paragraph to max_line_length
+        formatted_paragraph = format_text(paragraph_text, max_line_length)
+        augmented_text += formatted_paragraph + "\n\n"  # Ensure paragraph breaks are preserved
+
+    return augmented_text
 
 def split_text_with_spaces(text):
     pattern = re.compile(r'(.*?[\.\!\?]["\']?)(\s+|$)', re.DOTALL)
     return pattern.findall(text)
 
-# Function to format text based on a maximum line length
+# Function to format text based on a maximum line length, preserving sentence double spaces
 def format_text(text, max_line_length):
     words = text.split()
     formatted_text = ""
