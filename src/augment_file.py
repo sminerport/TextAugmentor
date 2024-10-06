@@ -22,13 +22,7 @@ def main():
 
     # Set the folder paths based on environment
     if is_running_in_colab():
-        print("Running in Google Colab, mounting Google Drive...")
-        from google.colab import drive
-        drive_path = "/content/drive"
-        if not os.path.ismount(drive_path):
-            drive.mount(drive_path)
-        else:
-            print("Google Drive is already mounted.")
+        print("Running in Google Colab. Please manually connect Google Drive.")
         folder_path = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/data"
         output_folder = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/output"
     else:
@@ -50,7 +44,7 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'({2,})', text)  # Capture paragraphs and the newlines
+    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and the newlines
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
