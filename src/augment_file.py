@@ -9,7 +9,6 @@ import nlpaug.augmenter.word as naw
 from tqdm import tqdm
 import torch
 
-
 def is_running_in_colab():
     """
     Check if the script is running in Google Colab.
@@ -37,7 +36,7 @@ def install_python_39_in_colab():
         subprocess.run(['wget', 'https://bootstrap.pypa.io/get-pip.py'], check=True)
     else:
         print("get-pip.py already exists. Skipping download.")
-        
+
     subprocess.run(['python3.9', 'get-pip.py'], check=True)
 
     # Switch to using Python 3.9 explicitly
@@ -57,8 +56,7 @@ def main():
 
     print(f"Current Python version: {sys.version}")
 
-
-    nltk.download("punkt_tab")
+    nltk.download("punkt")
 
     # Set the folder paths based on environment
     if is_running_in_colab():
@@ -73,7 +71,7 @@ def main():
         output_folder = "output"
 
     # Continue with the rest of the script after the installation
-    augment_files_in_folder(folder_path, output_folder)
+    augment_files_in_folder(folder_path, output_folder, max_line_length=80)
 
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
@@ -81,7 +79,7 @@ def get_txt_files(folder_path):
 def remove_repeated_punctuation(text):
     return re.sub(r"([!?.,])\1+", r"\1", text)
 
-def augment_text_preserving_structure(file_path, augmenter):
+def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
     with open(file_path, "r") as f_input:
         text = f_input.read()
 
@@ -96,17 +94,40 @@ def augment_text_preserving_structure(file_path, augmenter):
         else:
             augmented_text += spaces  # Preserve spaces for empty sentences
 
-    return augmented_text
+    # Format text to the desired line length
+    formatted_text = format_text(augmented_text, max_line_length)
+
+    return formatted_text
 
 def split_text_with_spaces(text):
     pattern = re.compile(r'(.*?[\.\!\?]["\']?)(\s+|$)', re.DOTALL)
     return pattern.findall(text)
 
+# Function to format text based on a maximum line length
+def format_text(text, max_line_length):
+    words = text.split()
+    formatted_text = ""
+    line = ""
+
+    for word in words:
+        # If adding the next word would exceed the max_line_length, add the line to formatted_text
+        if len(line) + len(word) + 1 > max_line_length:
+            formatted_text += line.strip() + "\n"
+            line = ""
+
+        line += word + " "
+
+    # Add the last line
+    if line:
+        formatted_text += line.strip() + "\n"
+
+    return formatted_text
+
 def write_augmented_file(augmented_text, output_file_path):
     with open(output_file_path, "w") as f_output:
         f_output.write(augmented_text)
 
-def augment_files_in_folder(folder_path, output_folder):
+def augment_files_in_folder(folder_path, output_folder, max_line_length=80):
     folder_path = os.path.abspath(folder_path)
     output_folder = os.path.abspath(output_folder)
     os.makedirs(output_folder, exist_ok=True)
@@ -130,7 +151,7 @@ def augment_files_in_folder(folder_path, output_folder):
         print(f"Processing: {file_name}")
 
         # Process each file, preserving sentence and line structure
-        augmented_text = augment_text_preserving_structure(file_path, aug)
+        augmented_text = augment_text_preserving_structure(file_path, aug, max_line_length)
 
         # Clean the augmented text
         cleaned_text = remove_repeated_punctuation(augmented_text)
