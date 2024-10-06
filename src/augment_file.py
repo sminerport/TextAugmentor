@@ -72,7 +72,7 @@ def main():
         output_folder = "output"
 
     # Continue with the rest of the script after the installation
-    augment_files_in_folder(folder_path, output_folder)
+    augment_files_in_folder(folder_path, output_folder, max_line_length=80)
 
 def get_txt_files(folder_path):
     return glob.glob(os.path.join(folder_path, "*.txt"))
@@ -80,44 +80,70 @@ def get_txt_files(folder_path):
 def remove_repeated_punctuation(text):
     return re.sub(r"([!?.,])\1+", r"\1", text)
 
-def augment_text_preserving_structure(file_path, augmenter):
+def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
     with open(file_path, "r") as f_input:
-        lines = f_input.readlines()
+        text = f_input.read()
 
-    augmented_lines = []
-    for line in tqdm(lines, desc="Processing Lines"):
-        if line.strip():  # Non-empty line
-            # Split the line into sentences, capturing the spaces
-            sentences_with_spaces = split_line_with_spaces(line)
+    # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
+    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and the newlines
 
-            augmented_line = ''
-            for sentence, spaces in sentences_with_spaces:
-                if sentence.strip():
-                    augmented_sentence = augmenter.augment(sentence)[0]
-                    augmented_line += augmented_sentence + spaces
-                else:
-                    augmented_line += spaces  # Preserve spaces for empty sentences
+    augmented_text = ""
+    for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
+        if paragraph.isspace() or paragraph.startswith("\n"):
+            augmented_text += paragraph  # Preserve multiple newlines
+            continue
 
-            augmented_lines.append(augmented_line)
-        else:
-            # Empty line (paragraph break), preserve as is
-            augmented_lines.append(line)
+        # Process each paragraph by splitting into sentences and keeping the original spaces
+        sentences_with_spaces = split_text_with_spaces(paragraph)
 
-    return ''.join(augmented_lines)
+        paragraph_text = ""
+        for sentence, spaces in sentences_with_spaces:
+            if sentence.strip():  # Only process non-empty sentences
+                augmented_sentence = augmenter.augment(sentence)[0]
+                paragraph_text += augmented_sentence + spaces
+            else:
+                paragraph_text += spaces  # Preserve spaces for empty sentences
 
-def split_line_with_spaces(line):
+        # Format text within each paragraph to max_line_length
+        formatted_paragraph = format_text(paragraph_text, max_line_length)
+        augmented_text += formatted_paragraph
+
+    return augmented_text
+
+def split_text_with_spaces(text):
     """
-    Splits a line into sentences, preserving original spacing (including double spaces and line breaks).
+    Splits text into sentences, preserving original spacing (single or double).
     """
-    pattern = re.compile(r'(.*?[\.\!\?]["\']?|\S.+?)(\s+|$)', re.DOTALL)
-    sentences_with_spaces = pattern.findall(line)
-    return sentences_with_spaces
+    pattern = re.compile(r'(.*?[.!?]["']?)(\s+|$)', re.DOTALL)
+    return pattern.findall(text)
+
+def format_text(text, max_line_length):
+    """
+    Format text to fit within a maximum line length, preserving spaces between sentences.
+    """
+    words = text.split()
+    formatted_text = ""
+    line = ""
+
+    for word in words:
+        # If adding the next word would exceed the max_line_length, add the line to formatted_text
+        if len(line) + len(word) + 1 > max_line_length:
+            formatted_text += line.rstrip() + "\n"
+            line = ""
+
+        line += word + " "
+
+    # Add the last line
+    if line:
+        formatted_text += line.rstrip() + "\n"
+
+    return formatted_text
 
 def write_augmented_file(augmented_text, output_file_path):
     with open(output_file_path, "w") as f_output:
         f_output.write(augmented_text)
 
-def augment_files_in_folder(folder_path, output_folder):
+def augment_files_in_folder(folder_path, output_folder, max_line_length=80):
     folder_path = os.path.abspath(folder_path)
     output_folder = os.path.abspath(output_folder)
     os.makedirs(output_folder, exist_ok=True)
@@ -141,7 +167,7 @@ def augment_files_in_folder(folder_path, output_folder):
         print(f"Processing: {file_name}")
 
         # Process each file, preserving sentence and line structure
-        augmented_text = augment_text_preserving_structure(file_path, aug)
+        augmented_text = augment_text_preserving_structure(file_path, aug, max_line_length)
 
         # Clean the augmented text
         cleaned_text = remove_repeated_punctuation(augmented_text)
