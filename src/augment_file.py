@@ -23,8 +23,8 @@ def main():
     # Set the folder paths based on environment
     if is_running_in_colab():
         print("Running in Google Colab. Please manually connect Google Drive.")
-        folder_path = "/content/drive/MyDrive/Code/TextAugmentor/data"
-        output_folder = "/content/drive/MyDrive/Code/TextAugmentor/output"
+        folder_path = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/data"
+        output_folder = "/content/drive/MyDrive/Colab Notebooks/TextAugmentor/output"
     else:
         print("Running in local environment...")
         folder_path = "data"
@@ -48,8 +48,8 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
-        if paragraph.isspace() or paragraph.startswith("\n"):
-            augmented_text += paragraph  # Preserve multiple newlines
+        if paragraph.isspace() or paragraph == "\n":
+            augmented_text += paragraph  # Preserve single newlines or multiple newlines
             continue
 
         # Process each paragraph by splitting into sentences and keeping the original spaces
@@ -65,9 +65,9 @@ def augment_text_preserving_structure(file_path, augmenter, max_line_length=80):
 
         # Format text within each paragraph to max_line_length
         formatted_paragraph = format_text(paragraph_text, max_line_length)
-        augmented_text += formatted_paragraph.strip() + "\n"  # Add exactly one newline to preserve paragraph spacing
+        augmented_text += formatted_paragraph + "\n"  # Add exactly one newline to preserve paragraph spacing
 
-    return augmented_text.strip() + "\n"  # Ensure no extra newlines at the end
+    return augmented_text.rstrip() + "\n"  # Ensure no extra newlines at the end
 
 def split_text_with_spaces(text):
     """
