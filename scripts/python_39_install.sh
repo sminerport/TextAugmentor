@@ -19,11 +19,12 @@ fi
 python3.9 get-pip.py
 
 # Step 5: Run the setup.sh script to install the necessary packages
-if [ -f setup.sh ]; then
+SCRIPT_DIR="$(dirname "$0")"
+if [ -f "$SCRIPT_DIR/setup.sh" ]; then
     echo "Running setup.sh to install necessary packages..."
-    bash setup.sh
+    bash "$SCRIPT_DIR/setup.sh"
 else
-    echo "setup.sh not found. Please ensure setup.sh is present to continue."
+    echo "setup.sh not found in $SCRIPT_DIR. Please ensure setup.sh is present to continue."
     exit 1
 fi
 
