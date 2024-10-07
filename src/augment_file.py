@@ -58,8 +58,7 @@ def augment_text_preserving_structure(file_path, augmenter):
 
     augmented_text = ""
     for idx, paragraph in enumerate(tqdm(paragraphs, desc="Processing Paragraphs")):
-        if re.match(r'^
-+$', paragraph):
+        if re.match(r'^\n+$', paragraph):
             augmented_text += paragraph  # Preserve single newlines or multiple newlines
             continue
 
