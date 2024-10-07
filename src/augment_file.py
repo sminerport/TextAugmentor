@@ -54,8 +54,7 @@ def augment_text_preserving_structure(file_path, augmenter):
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'(
-{2,})', text)  # Capture paragraphs and preserve original newlines
+    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and preserve original newlines
 
     augmented_text = ""
     for idx, paragraph in enumerate(tqdm(paragraphs, desc="Processing Paragraphs")):
