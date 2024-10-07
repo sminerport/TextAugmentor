@@ -54,11 +54,11 @@ def augment_text_preserving_structure(file_path, augmenter):
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'(?<=\n)\n+', text)  # Capture paragraphs and preserve original newlines
+    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and preserve original newlines
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
-        if paragraph.isspace() or paragraph == "\n":
+        if re.match(r'^\n+$', paragraph):
             augmented_text += paragraph  # Preserve single newlines or multiple newlines
             continue
 
@@ -75,7 +75,7 @@ def augment_text_preserving_structure(file_path, augmenter):
 
         # Format text within each paragraph to max_line_length
         formatted_paragraph = format_text(paragraph_text, max_line_length)
-        augmented_text += formatted_paragraph  # Do not add extra newline here
+        augmented_text += formatted_paragraph
 
     return augmented_text.rstrip()  # Ensure no extra newlines at the end
 
