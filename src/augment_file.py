@@ -54,11 +54,13 @@ def augment_text_preserving_structure(file_path, augmenter):
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and preserve original newlines
+    paragraphs = re.split(r'(
+{2,})', text)  # Capture paragraphs and preserve original newlines
 
     augmented_text = ""
     for idx, paragraph in enumerate(tqdm(paragraphs, desc="Processing Paragraphs")):
-        if re.match(r'^\n+$', paragraph):
+        if re.match(r'^
++$', paragraph):
             augmented_text += paragraph  # Preserve single newlines or multiple newlines
             continue
 
@@ -141,13 +143,14 @@ def augment_files_in_folder(folder_path, output_folder):
         # Clean the augmented text
         cleaned_text = remove_repeated_punctuation(augmented_text)
 
-        # Ensure the header (like "CHAPTER 2") is preserved without adding an extra newline
+        # Ensure the header (like "CHAPTER 2") is preserved with its original spacing
         with open(file_path, "r") as original_file:
             original_lines = original_file.readlines()
             if original_lines:
-                header = original_lines[0].strip()
+                header = original_lines[0].rstrip("\n")
                 if header:
-                    cleaned_text = header + "\n" + cleaned_text.lstrip("\n")
+                    # Preserve the original blank line after the header if it exists
+                    cleaned_text = header + ("\n\n" if len(original_lines) > 1 and original_lines[1].strip() == "" else "\n") + cleaned_text.lstrip("\n")
 
         output_file_path = os.path.join(output_folder, "AUG_" + file_name)
         write_augmented_file(cleaned_text, output_file_path)
