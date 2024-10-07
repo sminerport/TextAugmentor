@@ -74,7 +74,7 @@ def augment_text_preserving_structure(file_path, augmenter):
                 paragraph_text += spaces  # Preserve spaces for empty sentences
 
         # Format text within each paragraph to max_line_length
-        formatted_paragraph = format_text(paragraph_text, max_line_length).rstrip("\n")
+        formatted_paragraph = format_text(paragraph_text, max_line_length).lstrip("\n")
         augmented_text += formatted_paragraph
 
     return augmented_text.rstrip()  # Ensure no extra newlines at the end
