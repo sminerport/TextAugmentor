@@ -104,30 +104,21 @@ The script will process each text file in the `data/` directory, performing back
 
 Below are screenshots of the original text from Moby-Dick and the augmented output, displayed side-by-side to showcase the differences introduced by back-translation.
 
-<figure>
-  <img src="./images/chap1-1.png" alt="Augmentation Example 1" width="500" style="border: 1px solid #ccc; box-shadow: 2px 2px 5px #aaa;">
-  <figcaption style="font-style: italic; color: #555; text-align: left; font-size: 10pt; margin-top: 5px;">Figure 1: Original vs. Augmented text showcasing paragraph restructuring and variations in phrasing.</figcaption>
-</figure>
+<img src="./images/chap1-1.png" alt="Augmentation Example 1" width="500">
+<img src="./images/chap1-2.png" alt="Augmentation Example 2" width="500">
+<img src="./images/chap1-3.png" alt="Augmentation Example 3" width="500">
+<img src="./images/chap1-4.png" alt="Augmentation Example 4" width="500">
+<img src="./images/chap1-5.png" alt="Augmentation Example 5" width="500">
 
-<figure>
-  <img src="./images/chap1-2.png" alt="Augmentation Example 2" width="500" style="border: 1px solid #ccc; box-shadow: 2px 2px 5px #aaa;">
-  <figcaption style="font-style: italic; color: #555; text-align: left; font-size: 10pt; margin-top: 5px;">Figure 2: Demonstrates minor changes in word choices while maintaining sentence structure.</figcaption>
-</figure>
 
-<figure>
-  <img src="./images/chap1-3.png" alt="Augmentation Example 3" width="500" style="border: 1px solid #ccc; box-shadow: 2px 2px 5px #aaa;">
-  <figcaption style="font-style: italic; color: #555; text-align: left; font-size: 10pt; margin-top: 5px;">Figure 3: Highlights the preservation of double spaces and line breaks from the original text.</figcaption>
-</figure>
 
-<figure>
-  <img src="./images/chap1-4.png" alt="Augmentation Example 4" width="500" style="border: 1px solid #ccc; box-shadow: 2px 2px 5px #aaa;">
-  <figcaption style="font-style: italic; color: #555; text-align: left; font-size: 10pt; margin-top: 5px;">Figure 4: Changes in sentence arrangement and the introduction of subtle language variation.</figcaption>
-</figure>
 
-<figure>
-  <img src="./images/chap1-5.png" alt="Augmentation Example 5" width="500" style="border: 1px solid #ccc; box-shadow: 2px 2px 5px #aaa;">
-  <figcaption style="font-style: italic; color: #555; text-align: left; font-size: 10pt; margin-top: 5px;">Figure 5: Final example showing augmented text with complex sentence restructuring.</figcaption>
-</figure>
+
+
+
+
+
+
 
 ## Future Enhancements
 
