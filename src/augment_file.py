@@ -8,6 +8,8 @@ import nlpaug.augmenter.word as naw
 from tqdm import tqdm
 import torch
 
+# Suppress FutureWarning from transformers
+warnings.filterwarnings("ignore", category=FutureWarning, module="transformers.modeling_utils")
 
 def is_running_in_colab():
     """
@@ -52,7 +54,7 @@ def augment_text_preserving_structure(file_path, augmenter):
         text = f_input.read()
 
     # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
-    paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and the newlines
+    paragraphs = re.split(r'(?<=\n)\n+', text)  # Capture paragraphs and preserve original newlines
 
     augmented_text = ""
     for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
@@ -73,9 +75,9 @@ def augment_text_preserving_structure(file_path, augmenter):
 
         # Format text within each paragraph to max_line_length
         formatted_paragraph = format_text(paragraph_text, max_line_length)
-        augmented_text += formatted_paragraph + "\n"  # Add exactly one newline to preserve paragraph spacing
+        augmented_text += formatted_paragraph  # Do not add extra newline here
 
-    return augmented_text.rstrip() + "\n"  # Ensure no extra newlines at the end
+    return augmented_text.rstrip()  # Ensure no extra newlines at the end
 
 def split_text_with_spaces(text):
     """
