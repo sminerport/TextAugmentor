@@ -68,6 +68,7 @@ def augment_text_preserving_structure(file_path, augmenter):
         paragraph_text = ""
         for sentence, spaces in sentences_with_spaces:
             if sentence.strip():  # Only process non-empty sentences
+                sentence = sentence.replace("\n", " ")  # Replace newline characters with spaces
                 augmented_sentence = augmenter.augment(sentence)[0]
                 paragraph_text += augmented_sentence + spaces
             else:
@@ -90,17 +91,17 @@ def format_text(text, max_line_length):
     """
     Format text to fit within a maximum line length, preserving spaces between sentences.
     """
-    words = text.split()
+    words = re.split(r'(\s+)', text)  # Split text into words and preserve spaces
     formatted_text = ""
     line = ""
 
     for word in words:
         # If adding the next word would exceed the max_line_length, add the line to formatted_text
-        if len(line) + len(word) + 1 > max_line_length:
+        if len(line) + len(word) > max_line_length:
             formatted_text += line.rstrip() + "\n"
             line = ""
 
-        line += word + " "
+        line += word
 
     # Add the last line
     if line:
