@@ -53,22 +53,21 @@ def augment_text_preserving_structure(file_path, augmenter):
     with open(file_path, "r") as f_input:
         text = f_input.read()
 
-    # Split the text into paragraphs first (preserve original paragraph breaks, e.g., "\n\n")
+    # Split the text into paragraphs, capturing the original newlines.
     paragraphs = re.split(r'(\n{2,})', text)  # Capture paragraphs and preserve original newlines
 
     augmented_text = ""
-    for idx, paragraph in enumerate(tqdm(paragraphs, desc="Processing Paragraphs")):
+    for paragraph in tqdm(paragraphs, desc="Processing Paragraphs"):
         if re.match(r'^\n+$', paragraph):
-            augmented_text += paragraph  # Preserve single newlines or multiple newlines
+            augmented_text += paragraph  # Preserve single or multiple newlines
             continue
 
-        # Process each paragraph by splitting into sentences and keeping the original spaces
+        # Process each paragraph by splitting into sentences and preserving original spaces.
         sentences_with_spaces = split_text_with_spaces(paragraph)
 
         paragraph_text = ""
         for sentence, spaces in sentences_with_spaces:
             if sentence.strip():  # Only process non-empty sentences
-                sentence = sentence.replace("\n", " ")  # Replace newline characters with spaces
                 augmented_sentence = augmenter.augment(sentence)[0]
                 paragraph_text += augmented_sentence + spaces
             else:
