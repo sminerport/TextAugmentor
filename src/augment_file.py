@@ -83,7 +83,7 @@ def split_text_with_spaces(text):
     """
     Splits text into sentences, preserving original spacing (single or double).
     """
-    pattern = re.compile(r'(.*?[.!?]["\']?)(\s+|$)', re.DOTALL)
+    pattern = re.compile(r'(.*?[.!?]["']?)(\s+|$)', re.DOTALL)
     return pattern.findall(text)
 
 def format_text(text, max_line_length):
@@ -99,6 +99,10 @@ def format_text(text, max_line_length):
         if len(line) + len(word) > max_line_length:
             formatted_text += line.rstrip() + "\n"
             line = ""
+
+        # Avoid starting a new line with a space
+        if not line and word.isspace():
+            continue
 
         line += word
 
