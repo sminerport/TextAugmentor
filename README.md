@@ -1,16 +1,16 @@
 # TextAugmentor: Text Augmentation using Back-Translation
 
-This repository contains a Python project that uses the NLPAug library and a back-translation (round-trip translation) technique to augment text datasets. The goal of text augmentation is to increase the quantity and variety of training data, making it more diverse and effective for natural language processing (NLP) tasks. This repository processes text files, creating augmented versions that can be used to improve model performance in NLP applications like chatbot training or text classification.
+This repository contains a Python project that uses the NLPAug library and a back-translation (round-trip translation) technique to augment text datasets. The goal of text augmentation is to increase the quantity and variety of training data, making it more diverse and effective for natural language processing (NLP) tasks. For example, increasing data variety helps improve NLP model robustness by making the model better able to generalize to new, unseen examples. This repository processes text files, creating augmented versions that can be used to improve model performance in NLP applications like chatbot training or text classification.
 
 ## Overview of Text Augmentation Techniques
 
 Text augmentation is a method used to expand or modify existing text data to enhance the quality and diversity of training data for NLP tasks. Common text augmentation techniques include:
 
-- **Synonym Replacement**: Replacing words with their synonyms.
-- **Random Insertion**: Inserting random synonyms of words into the text.
-- **Random Deletion**: Deleting random words from the text.
-- **Random Swap**: Swapping the position of random words in the text.
-- **Back-Translation**: Translating the text to another language and back to the original language.
+- **Synonym Replacement**: Replacing words with their synonyms. Effective for creating simple variations in vocabulary.
+- **Random Insertion**: Inserting random synonyms of words into the text. Useful for introducing new context without changing meaning significantly.
+- **Random Deletion**: Deleting random words from the text. Best for improving model robustness by exposing it to partial information.
+- **Random Swap**: Swapping the position of random words in the text. Helps models learn better context dependencies.
+- **Back-Translation**: Translating the text to another language and back to the original language. Effective for rephrasing while retaining meaning.
 
 ## Applications of Text Augmentation
 
@@ -25,7 +25,7 @@ Text augmentation can be used in many NLP tasks, such as:
 
 ## Back-Translation Augmenter
 
-This project employs the back-translation augmentation technique, which translates text to another language and then back to the original language. This process can introduce variations while retaining the original meaning, which helps create more diverse training data. The project uses the NLPAug library to perform back-translation on the input text files.
+This project employs the back-translation augmentation technique, which translates text to another language and then back to the original language. This process can introduce variations while retaining the original meaning, such as rephrasing sentences or changing word order, which helps create more diverse training data. The project uses the NLPAug library to perform back-translation on the input text files.
 
 ### Language Models Used
 
@@ -102,33 +102,29 @@ The script will process each text file in the `data/` directory, performing back
 
 ## Screenshots of Augmented Text
 
-Below are screenshots of the original text from Moby-Dick and the augmented output, displayed side-by-side to showcase the differences introduced by back-translation.
+Below are screenshots of the original text from Moby-Dick and the augmented output, displayed side-by-side to showcase the differences introduced by back-translation. Look for changes in phrasing, sentence structure, and word choice to understand the variations introduced.
 
 <img src="./images/chap1-1.png" alt="Augmentation Example 1" width="500">
+
 <img src="./images/chap1-2.png" alt="Augmentation Example 2" width="500">
+
 <img src="./images/chap1-3.png" alt="Augmentation Example 3" width="500">
+
 <img src="./images/chap1-4.png" alt="Augmentation Example 4" width="500">
+
 <img src="./images/chap1-5.png" alt="Augmentation Example 5" width="500">
 
-
-
-
-
-
-
-
-
-
+For a closer look at the augmented text, you can explore the files in the [output](./output) folder.
 
 ## Future Enhancements
 
-- **User Interface**: Develop a simple web-based UI to allow users to upload files for augmentation.
+- **User Interface**: Develop a simple web-based UI to allow users to upload files for augmentation. Technologies like Flask or Django could be considered for building the UI.
 - **Customizable Translation Models**: Allow users to choose different translation models for back-translation.
 - **Fine-Tuning Options**: Provide configurable settings for different aspects of augmentation, such as specifying languages for back-translation or preserving specific formatting.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
