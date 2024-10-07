@@ -68,8 +68,8 @@ def augment_text_preserving_structure(file_path, augmenter):
         paragraph_text = ""
         for sentence, spaces in sentences_with_spaces:
             if sentence.strip():  # Only process non-empty sentences
-                augmented_sentence = augmenter.augment(sentence)[0]
-                paragraph_text += augmented_sentence + spaces
+                augmented_sentence = augmenter.augment(sentence.replace("\n", " "))[0]
+                paragraph_text += augmented_sentence + spaces.replace("\n", "")
             else:
                 paragraph_text += spaces  # Preserve spaces for empty sentences
 
@@ -81,9 +81,9 @@ def augment_text_preserving_structure(file_path, augmenter):
 
 def split_text_with_spaces(text):
     """
-    Splits text into sentences, preserving original spacing (single or double).
+    Splits text into sentences, preserving original spacing (single or double), excluding newlines.
     """
-    pattern = re.compile(r'(.*?[.!?]["\']?)(\s+|$)', re.DOTALL)
+    pattern = re.compile(r'(.*?[.!?]["\']?)([ \t]+|$)', re.DOTALL)  # Capture spaces but not newlines
     return pattern.findall(text)
 
 def format_text(text, max_line_length):
